@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+package com.devrel.android.fitactions
 
 import android.app.assist.AssistContent
 import android.content.Intent
@@ -44,6 +45,30 @@ class FitMainActivity :
 
         // Handle the intent this activity was launched with.
         intent?.handleIntent()
+    }
+
+    private fun handleDeepLink(data: Uri?) {
+        when (data?.path) {
+            DeepLink.START -> {
+                // Get the parameter defined as "exerciseType" and add it to the fragment arguments
+                val exerciseType = data.getQueryParameter(DeepLink.Params.ACTIVITY_TYPE).orEmpty()
+                val type = FitActivity.Type.find(exerciseType)
+                val arguments = Bundle().apply {
+                    putSerializable(FitTrackingFragment.PARAM_TYPE, type)
+                }
+
+                updateView(FitTrackingFragment::class.java, arguments)
+            }
+            DeepLink.STOP -> {
+                // Stop the tracking service if any and return to home screen.
+                stopService(Intent(this, FitTrackingService::class.java))
+                updateView(FitStatsFragment::class.java)
+            }
+            else -> {
+                // Path is not supported or invalid, start normal flow.
+                showDefaultView()
+            }
+        }
     }
 
     /**
@@ -123,7 +148,12 @@ class FitMainActivity :
      * @receiver the intent to handle
      */
     private fun Intent.handleIntent() {
-        showDefaultView()
+        when (action) {
+            // When the action is triggered by a deep-link, Intent.ACTION_VIEW will be used
+            Intent.ACTION_VIEW -> handleDeepLink(data)
+            // Otherwise start the app as you would normally do.
+            else -> showDefaultView()
+        }
     }
 
     // Add handleIntent function

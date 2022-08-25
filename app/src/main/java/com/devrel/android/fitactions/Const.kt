@@ -18,7 +18,7 @@
 package com.devrel.android.fitactions
 
 /**
- * Static object that defines the different deep-links
+ * Static object that defines the different BIIs
  */
 object DeepLink {
     const val STATS = "/stats"

@@ -33,7 +33,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "PUT_YOUR_APPLICATION_ID_HERE"
+        applicationId "com.codelabs01.vinicius"
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 2
